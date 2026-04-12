@@ -1,0 +1,3609 @@
+<!DOCTYPE html>
+<html lang="gl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Itinerario de rutas completo - ESMAS-ES+</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.1);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .intro-section {
+            background: white;
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .intro-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .intro-section p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        /* Botóns despregables */
+        .help-section {
+            background: white;
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .help-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .help-button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .help-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+        }
+
+        .help-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .help-content.active {
+            display: block;
+        }
+
+        .help-content h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+
+        /* Navegación por mundos */
+        .world-buttons-container {
+            background: white;
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .world-buttons-container h3 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .world-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .world-button {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .world-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .world-button-all {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+        
+        .search-section {
+            background: white;
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .search-container {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            padding: 12px 20px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100%;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: #2980b9;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .category-dropdown {
+            padding: 12px 15px;
+            border: 2px solid #27ae60;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            color: #2c3e50;
+            cursor: pointer;
+            min-width: 200px;
+        }
+        
+        .category-dropdown:focus {
+            outline: none;
+            border-color: #229954;
+            box-shadow: 0 0 10px rgba(39, 174, 96, 0.3);
+        }
+        
+        .search-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            background: linear-gradient(135deg, #d35400, #c0392b);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+        }
+        
+        .search-stats {
+            color: #7f8c8d;
+            font-style: italic;
+            text-align: center;
+        }
+        
+        .mundo-section {
+            background: white;
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .mundo-section.hidden {
+            display: none;
+        }
+        
+        .mundo-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .route-item {
+            background: #f8f9fa;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+            transition: all 0.3s ease;
+            display: block;
+        }
+        
+        .route-item:hover {
+            background: #e8f4f8;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+        }
+        
+        .route-item.hidden {
+            display: none;
+        }
+        
+        .route-path {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .route-example {
+            color: #7f8c8d;
+            font-style: italic;
+            margin-left: 20px;
+            padding: 8px 15px;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .arrow {
+            color: #e74c3c;
+            font-weight: bold;
+            margin: 0 8px;
+        }
+        
+        .category-level-1 { color: #2c3e50; }
+        .category-level-2 { color: #27ae60; }
+        .category-level-3 { color: #f39c12; }
+        .category-level-4 { color: #9b59b6; }
+        .category-level-5 { color: #e74c3c; }
+        .category-level-6 { color: #d35400; }
+        
+        @media (max-width: 768px) {
+            .search-container {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .category-dropdown {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: 2rem;
+                padding: 15px;
+            }
+            
+            .mundo-section {
+                padding: 15px;
+            }
+
+            .help-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .world-buttons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>📚 Itinerario de rutas - ESMAS-ES+</h1>
+    
+    <div class="intro-section">
+        <h2>Sistema de clasificación semántica</h2>
+        <p>Explora as rutas ontolóxicas organizadas por mundos conceptuais</p>
+        <p>Unha ferramenta completa para navegar polo léxico</p>
+    </div>
+    <div class="help-section">
+        <div class="help-buttons">
+            <button class="help-button" onclick="toggleHelp('description')">
+                Descrición
+            </button>
+            <button class="help-button" onclick="toggleHelp('usage')">
+                Como usar esta ferramenta?
+            </button>
+        </div>
+        
+        <div id="description-help" class="help-content">
+            <h3>Descrición</h3>
+            <p>Itinerario de rutas - ESMAS-ES+ é unha guía interactiva dun sistema de clasificación semántica.
+            Este recurso organiza rutas ontolóxicas en distintos mundos conceptuais, abarcando unha ampla variedade de temas.
+            Cada ruta está acompañada de numerosos exemplos léxicos para ilustrar o seu significado, converténdoo nunha ferramenta completa para a exploración do léxico.</p>
+        </div>
+        <div id="usage-help" class="help-content">
+            <h3>Como usar esta ferramenta?</h3>
+            <p>Para explorar o contido deste itinerario, podes navegar a través dos distintos mundos conceptuais, como, por exemplo, <strong>"Animado"</strong> ou <strong>"Material"</strong>.
+            Se buscas unha ruta específica, podes utilizar o filtro de busca para atopala facilmente.</p>
+            <p>Cada ruta preséntase cunha estrutura xerárquica que te axuda a entender a súa clasificación.
+            Ao seleccionar unha, atoparás unha lista de palabras que pertencen a esa categoría, servindo como exemplos ilustrativos.</p>
+        </div>
+    </div>
+    <div class="world-buttons-container" id="world-navigation">
+        <h3>Selecciona un mundo ontolóxico para explorar</h3>
+        <div class="world-buttons-grid" id="world-buttons">
+            </div>
+    </div>
+    <div class="search-section">
+        <div class="search-container">
+            <input 
+                type="text" class="search-box" id="searchInput" placeholder="Buscar palabras en exemplos e rutas...">
+            <select class="category-dropdown" id="categoryFilter">
+                <option value="">Todas as categorías</option>
+                <option value="Animado">Animado</option>
+                <option value="Material">Material</option>
+                <option value="Intelectual">Intelectual</option>
+                <option value="Situacións dinámicas">Situacións dinámicas</option>
+                <option value="Situacións estáticas">Situacións estáticas</option>
+                <option value="Lugar">Lugar</option>
+                <option value="Unidades">Unidades</option>
+            </select>
+            <button class="search-btn">Buscar</button>
+        </div>
+   
+        <div class="search-stats" id="searchStats">
+            Selecciona un mundo ontolóxico para comezar a exploración
+        </div>
+    </div>
+
+    <div class="search-section">
+        <div class="search-container">
+            <input 
+                type="text" class="search-box" id="searchInput" placeholder="Buscar palabras en exemplos e rutas...">
+            <select class="category-dropdown" id="categoryFilter">
+                <option value="">Todas as categorías</option>
+                <option value="Animado">Animado</option>
+                <option value="Material">Material</option>
+                <option value="Intelectual">Intelectual</option>
+                <option value="Situacións dinámicas">Situacións dinámicas</option>
+                <option value="Situacións estáticas">Situacións estáticas</option>
+                <option value="Lugar">Lugar</option>
+                <option value="Unidades">Unidades</option>
+            </select>
+            <button class="search-btn">Buscar</button>
+        </div>
+   
+        <div class="search-stats" id="searchStats">
+            Selecciona un mundo ontolóxico para comezar a exploración
+        </div>
+    </div>
+    <div class="mundo-section" data-category="Animado">
+        <h2 class="mundo-title"><span class="category-level-1">Animado</span></h2>
+        
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Condición e relación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">nenos, pai, persoa, xente, individuo, ser humano</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Condición e relación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Orixe</span>
+            </div>
+            <div class="route-example">europeo, chinesa, americano, africano, asiática, galegos</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Condición e relación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Familia</span>
+            </div>
+            <div class="route-example">nai, avoa, fillo, irmá, curmán, tío, sobriño</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Condición e relación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Apelidos</span>
+            </div>
+            <div class="route-example">Fernández, Rodríguez, González, García, López, Martínez</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Condición e relación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Nome propio</span>
+            </div>
+            <div class="route-example">Luísa, Daniel, María, Carlos, Ana, Xosé, Carmen</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Personaxe histórico</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Nome propio</span>
+            </div>
+            <div class="route-example">Cleopatra, César, Napoleón, Cervantes, Picasso, Gandhi</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Personaxe histórica</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Apelidos</span>
+            </div>
+            <div class="route-example">Fernández, Domínguez, Shakespeare, Einstein, Da Vinci</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Personaxe histórica</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Título</span>
+            </div>
+            <div class="route-example">graduado, doutor, rei, emperador, conde, duque</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Condición humana</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Negativa</span>
+            </div>
+            <div class="route-example">enferma, inimigo, criminal, ladrón, mentirán, traidor</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Condición humana</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Positiva</span>
+            </div>
+            <div class="route-example">amiga, compañeiro, heroe, santo, benefactor, salvador</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Condición humana</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Desprazamento</span>
+            </div>
+            <div class="route-example">emigrante, nómade, refuxiado, viaxeiro, turista, peregrino</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Condición humana</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Medicina</span>
+            </div>
+            <div class="route-example">paciente, convalecente, enfermo, ferido</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Condición humana</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Educación</span>
+            </div>
+            <div class="route-example">estudante, alumno, aprendiz, bolseiro</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Condición humana</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Habitante</span>
+            </div>
+            <div class="route-example">inquilina, veciño, residente, poboador, cidadán</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Axente ou actor</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">manifestante, filántropo, activista, voluntario, colaborador</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Axente ou actor</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Acto positivo</span>
+            </div>
+            <div class="route-example">inventor, doante, salvador, benefactor, mecenas</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Axente ou actor</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Acto negativo</span>
+            </div>
+            <div class="route-example">bandido, asasina, ladrón, estafador, terrorista</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Actividade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Cargo</span>
+            </div>
+            <div class="route-example">decana, alcalde, presidente, director, ministro, embaixador</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Actividade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Profesión</span>
+            </div>
+            <div class="route-example">fontaneiro, electricista, carpinteiro, mecánico, xardineiro</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Actividade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Profesión</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Educación</span>
+            </div>
+            <div class="route-example">profesora, docente, instrutor</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Pensamento e crenza</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Crenza relixiosa</span>
+            </div>
+            <div class="route-example">catolicismo, taoísmo, cristianismo, budismo, islam, xudaísmo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Pensamento e crenza</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Ideoloxía política</span>
+            </div>
+            <div class="route-example">socialista, centrista, liberal, conservador, progresista</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Organizacións e grupos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Asociación tempo libre</span>
+            </div>
+            <div class="route-example">club, asociación, grupo, sociedade, irmandade</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Organizacións e grupos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Organización</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Xeral</span>
+            </div>
+            <div class="route-example">Cruz Vermella, UNESCO, Greenpeace, Amnistía Internacional</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Organizacións e grupos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Organización</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Política</span>
+            </div>
+            <div class="route-example">ONU, Unión Europea, OTAN, Parlamento Europeo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Organizacións e grupos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Organización</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Educativa</span>
+            </div>
+            <div class="route-example">universidade, colexio, instituto, academia, escola</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Organizacións e grupos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Organización</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Militar</span>
+            </div>
+            <div class="route-example">exército, milicias, mariña, aviación, garda civil</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Organizacións e grupos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Organización</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Empresarial</span>
+            </div>
+            <div class="route-example">editorial, conserveira, multinacional, startup, corporación</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Organizacións e grupos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Organización</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Cadea</span>
+            </div>
+            <div class="route-example">CRTVG, TVG, Antena 3, Telecinco, La Sexta, Netflix</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Organizacións e grupos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Organización</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Gobernamental</span>
+            </div>
+            <div class="route-example">parlamento, goberno, ministerio, concello, deputación</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Organizacións e grupos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Organización</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Médica</span>
+            </div>
+            <div class="route-example">hospital, clínica, ambulatorio, sanatorio, consultorio</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Organizacións e grupos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Organización</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Virtual</span>
+            </div>
+            <div class="route-example">Facebook, Instagram, Twitter, LinkedIn, TikTok</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Organizacións e grupos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Organización</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">País</span>
+            </div>
+            <div class="route-example">España, Portugal, Francia, Italia, Alemaña, Reino Unido</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Organizacións e grupos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Grupo ou colectivo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Xeral</span>
+            </div>
+            <div class="route-example">equipo, quinteto, banda, orquestra, coro, conxunto</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Organizacións e grupos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Grupo ou colectivo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Militar</span>
+            </div>
+            <div class="route-example">infantaría, cabalaría, artillaría, comandos, paracaidistas</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Organizacións e grupos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Grupo ou colectivo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Grupo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-6">Reunión</span>
+            </div>
+            <div class="route-example">coloquio, foro, congreso, seminario, simposio</div>
+        </div>
+        <!-- Criaturas de ficción -->
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                  <span class="category-level-2">Criaturas de ficción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">fadas, monstro, trasno, pantasma, vampiro, Santa Compaña</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                    <span class="category-level-2">Criaturas de ficción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Nome</span>
+            </div>
+            <div class="route-example">Mickey Mouse, Afrodita, Adrián Solovio, Sherlock Holmes, Don Quixote</div>
+        </div>
+        <!-- Animal -->
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Animal</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">cadela, gato, animal, mascota, besta, criatura</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Animal</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Mamífero</span>
+            </div>
+            <div class="route-example">leoa, tigre, elefante, xirafa, cabalo, vaca, porco</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Animal</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Ave</span>
+            </div>
+            <div class="route-example">aguia, papagaio, galiña, parrulo, cegoña, gaivota, canario</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Animal</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Peixe</span>
+            </div>
+            <div class="route-example">tiburón, sardiña, atún, salmón, bacallau, troita</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Animal</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Réptil</span>
+            </div>
+            <div class="route-example">serpe, crocodilo, lagarto, iguana, tartaruga, salamántiga</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Animal</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Insecto</span>
+            </div>
+            <div class="route-example">mosca, cabalo do demo, abella, bolboreta, formiga, escaravello</div>
+        </div>
+        <!-- Vexetal -->
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Vexetal</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Planta</span>
+            </div>
+            <div class="route-example">flor, árbore, planta, vexetal, herba, musgo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Vexetal</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Árbore</span>
+            </div>
+            <div class="route-example">eucalipto, piñeiro, carballo, oliveira, cerdeira, castiñeiro, palmeira</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Vexetal</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Flor</span>
+            </div>
+            <div class="route-example">rosa, margarida, caravel, tulipán, xirasol, orquídea</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Vexetal</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Froita</span>
+            </div>
+            <div class="route-example">laranxa, plátano, mazá, pera, uva, pexego, amorodo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Vexetal</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Hortaliza</span>
+            </div>
+            <div class="route-example">cebola, cenoria, leituga, tomate, pataca, pemento</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Vexetal</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Especias e condimentos</span>
+            </div>
+            <div class="route-example">canela, pementa, ourego, tomiño, alfábega, pirixel</div>
+        </div>
+
+        <!-- Partes do corpo ou ser vivo -->
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Partes do corpo ou ser vivo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">pescozo, pés, man, brazo, perna, corpo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Partes do corpo ou ser vivo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Externa</span>
+            </div>
+            <div class="route-example">cabeza, costas, cara, ollos, nariz, boca, orella</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Partes do corpo ou ser vivo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Recubrimento</span>
+            </div>
+            <div class="route-example">pel, pelo, cabelo, uñas, pestanas, cellas</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Partes do corpo ou ser vivo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Interna (músculos e ósos)</span>
+            </div>
+            <div class="route-example">peroné, glúteos, fémur, canela, cranio, costelas</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Partes do corpo ou ser vivo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Humano</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Órganos</span>
+            </div>
+            <div class="route-example">ovarios, fígado, corazón, pulmóns, riles, cerebro</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Partes do corpo ou ser vivo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Animal</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">pata, gadoupas, rabo, fociño, plumas, escamas</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Partes do corpo ou ser vivo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Animal</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Interna (músculos e ósos)</span>
+            </div>
+            <div class="route-example">quilla, coracoide, esterno, vértebras, cartilaxe</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Animado</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Partes do corpo ou ser vivo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Vexetal</span>
+            </div>
+            <div class="route-example">talo, tronco, raíz, folla, póla, cortiza, froito</div>
+        </div>
+        </div>
+
+
+<!-- MATERIAL -->
+    <div class="mundo-section" data-category="Material">
+        <h2 class="mundo-title"><span class="category-level-1">Material</span></h2>
+        
+ 
+        <!-- Categorías de produtos -->
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">cigarro, bucina, obxecto, cousa, artigo, elemento</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Madeira</span>
+            </div>
+            <div class="route-example">ébano, carballo, piñeiro, cedro, caoba, faia, bambú</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Minerais e metais</span>
+            </div>
+            <div class="route-example">rubí, aluminio, ouro, prata, ferro, cobre, diamante</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Orgánico</span>
+            </div>
+            <div class="route-example">cortiza, liño, algodón, seda, la, coiro, óso</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Pedras ornamentais</span>
+            </div>
+            <div class="route-example">mármore, cuarzo, granito, lousa, xaspe, ónix</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Artificial</span>
+            </div>
+            <div class="route-example">plástico, vidro, fibra de vidro, resina, polímero</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Cerámico</span>
+            </div>
+            <div class="route-example">porcelana, barro, arxila, gres, louza, cerámica</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Mobiliario</span>
+            </div>
+            <div class="route-example">cortina, armario, mesa, cadeira, sofá, cama, andel</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Coidado persoal (cosmética)</span>
+            </div>
+            <div class="route-example">lapis de labios, esmalte, crema, perfume, xampú, maquillaxe</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Ornamentación (xoia)</span>
+            </div>
+            <div class="route-example">anel, pendentes, colar, pulseira, reloxo, broche</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Medicamento</span>
+            </div>
+            <div class="route-example">pastilla, pílula, xarope, cápsula, vacina, antibiótico</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Musical</span>
+            </div>
+            <div class="route-example">piano, guitarra, violín, batería, frauta, trompeta</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Aparello de cociña</span>
+            </div>
+            <div class="route-example">tixola, pota, microondas, forno, frigorífico, batedor</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Monetario</span>
+            </div>
+            <div class="route-example">billete, diñeiro, moeda, cheque, tarxeta, efectivo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Tecnoloxía</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Xeral</span>
+            </div>
+            <div class="route-example">cámara, dron, robot, sensor, circuíto, procesador</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Tecnoloxía</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Dispositivo</span>
+            </div>
+            <div class="route-example">ordenador, smartphone, tableta, portátil, reloxo intelixente</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Categorías de produtos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Superficie (parte)</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Parte</span>
+            </div>
+            <div class="route-example">base, bordo, superficie, lado, extremo, punta</div>
+        </div>
+
+        <!-- Gastronomía e inxesta -->
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Gastronomía e inxesta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">sobremesa, entrante, prato, menú, comida, alimento</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Gastronomía e inxesta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Refección</span>
+            </div>
+            <div class="route-example">banquete, festín, cea, almorzo, xantar, merenda</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Gastronomía e inxesta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Fariñas e sobremesas</span>
+            </div>
+            <div class="route-example">pastel, manitoba, torta, galleta, pan, biscoito</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Gastronomía e inxesta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Animal</span>
+            </div>
+            <div class="route-example">churrasco, asado, carne, filete, bisté, xamón</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Gastronomía e inxesta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Mamífero</span>
+            </div>
+            <div class="route-example">porco, tenreira, año, cabra, coello, cervo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Gastronomía e inxesta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Ave</span>
+            </div>
+            <div class="route-example">polo, pavo, pato, ganso, paspallás, faisán</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Gastronomía e inxesta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Acuático</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Xeral</span>
+            </div>
+            <div class="route-example">salmón, polbo, marisco, peixe, atún, pescada</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Gastronomía e inxesta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Acuático</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Peixe</span>
+            </div>
+            <div class="route-example">troita, suxi, bacallau, sardiña, dourada, robaliza</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Gastronomía e inxesta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Acuático</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Marisco</span>
+            </div>
+            <div class="route-example">lumbrigante, lagostino, gambas, mexillóns, ameixas, lagosta</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Gastronomía e inxesta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Planta e condimento</span>
+            </div>
+            <div class="route-example">alfábega, pementa, romeu, allo, cebola, pemento</div>
+        </div>
+
+        <!-- Construción e urbanismo -->
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Construción e urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Construción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Parte</span>
+                <span class="arrow">→</span>
+                <span class="category-level-6">Material</span>
+            </div>
+            <div class="route-example">baldosa, tella, ladrillo, cemento, xeso, madeira</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Construción e urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Construción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Parte</span>
+                <span class="arrow">→</span>
+                <span class="category-level-6">Xeral</span>
+            </div>
+            <div class="route-example">fiestra, reixa, porta, escaleira, balcón, cheminea</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Construción e urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Construción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Habitación</span>
+            </div>
+            <div class="route-example">tellado, faiado, soto, cociña, dormitorio, salón</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Construción e urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Construción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Tipo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-6">Xeral</span>
+            </div>
+            <div class="route-example">catedral, rañaceos, monumento, edificio, estrutura</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Construción e urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Construción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Tipo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-6">Medicina</span>
+            </div>
+            <div class="route-example">hospital, sanatorio, clínica, consultorio, ambulatorio</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Construción e urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Construción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Tipo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-6">Xurisprudencia</span>
+            </div>
+            <div class="route-example">cárcere, sala do penal, tribunal, xulgado</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Construción e urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Construción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Tipo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-6">Empresarial</span>
+            </div>
+            <div class="route-example">xornal, editorial, oficina, empresa</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Construción e urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Construción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Tipo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-6">Domicilio</span>
+            </div>
+            <div class="route-example">casa, rañaceos, vivenda, fogar, domicilio</div>
+        </div>
+ 
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Construción e urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Construción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Tipo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-6">Educación</span>
+            </div>
+            <div class="route-example">colexio, instituto, escola, facultade</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Construción e urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Construción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Tipo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-6">Desprazamento</span>
+            </div>
+            <div class="route-example">albergue, parador, hotel, hostal, pensión</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Construción e urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Vía</span>
+            </div>
+            <div class="route-example">estrada, rúa, avenida, praza, autoestrada, camiño</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Construción e urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Canle</span>
+            </div>
+            <div class="route-example">canle, acueduto, túnel, conduto, sumidoiro</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Construción e urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Ponte</span>
+            </div>
+            <div class="route-example">ponte, pasarela, viaduto, ponte levadiza</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Construción e urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Mobiliario</span>
+            </div>
+            <div class="route-example">papeleira, farol, banco, semáforo, fonte</div>
+        </div>
+
+        <!-- Vestimenta -->
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Vestimenta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Calzado</span>
+            </div>
+            <div class="route-example">zapatos, botas, zapatillas, sandalias, chanquetas</div>
+        </div>
+    
+       <!-- Obxecto - Categorías de produtos -->
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Vestimenta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Roupa</span>
+            </div>
+            <div class="route-example">saia, kimono, camisa, pantalón, vestido, chaqueta</div>
+        </div>
+
+        <!-- Locomoción -->
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Locomoción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">tanque, avión, vehículo, transporte, máquina, motor</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Locomoción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Terrestre</span>
+            </div>
+            <div class="route-example">moto, camión, coche, autobús, tren, bicicleta</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Locomoción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Acuático</span>
+            </div>
+            <div class="route-example">submarino, barca, barco, iate, lancha, veleiro</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Locomoción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Aéreo</span>
+            </div>
+            <div class="route-example">cazas, bombardeiros, helicóptero, globo, parapente, avioneta</div>
+        </div>
+
+        <!-- Comunicación -->
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Comunicación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">carta, cartel, mensaxe, sinal, letreiro, pancarta</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Comunicación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Texto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Xeral</span>
+            </div>
+            <div class="route-example">volume, borrador, manuscrito, texto, escrito, documento</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Comunicación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Texto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Tipo textual</span>
+            </div>
+            <div class="route-example">panfleto, manual de instrucións, folleto, guía</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Comunicación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Texto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Publicado</span>
+            </div>
+            <div class="route-example">libro, xornal, revista, artigo, ensaio, novela</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Comunicación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Texto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Parte</span>
+            </div>
+            <div class="route-example">introdución, preámbulo, conclusión, capítulo, parágrafo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Comunicación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Texto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Documento</span>
+            </div>
+            <div class="route-example">certificado, pasaporte, diploma, acta, contrato</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Comunicación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Acordo</span>
+            </div>
+            <div class="route-example">contrato, convenio, pacto, acordo, compromiso</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Comunicación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Audiovisual</span>
+            </div>
+            <div class="route-example">lapis de memoria, tableta, disco duro, CD, DVD</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Obxecto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Comunicación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Dixital</span>
+            </div>
+            <div class="route-example">libro electrónico, páxina web, blog, aplicación, software, plataforma</div>
+        </div>
+
+        <!-- Substancia -->
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Substancia</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">suor, bágoa, saliva, sangue, mucosidade, ouriños</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Substancia</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Carburante</span>
+            </div>
+            <div class="route-example">gasolina, diésel, queroseno, gas, etanol, biodiésel</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Substancia</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Medicamento</span>
+            </div>
+            <div class="route-example">xarope, gotas, pomada, crema, ungüento</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Substancia</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Excremento</span>
+            </div>
+            <div class="route-example">caca, mexo, excremento, feces, ouriños</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Substancia</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Secreción</span>
+            </div>
+            <div class="route-example">suor, pus, saliva, mucosidade, secreción</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Substancia</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Gas</span>
+            </div>
+            <div class="route-example">dióxido de carbono, argon, osíxeno, nitróxeno, metano, radon</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Substancia</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Líquido (non consumible)</span>
+            </div>
+            <div class="route-example">lixivia, deterxente, disolvente, ácido, combustible</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Substancia</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Gastronomía e inxesta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Líquido consumible</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Xeral</span>
+            </div>
+            <div class="route-example">auga, vinagre, aceite, leite, zume, viño</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Substancia</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Gastronomía e inxesta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Líquido consumible</span>
+                <span class="arrow">→</span>
+                <span class="category-level-5">Bebible</span>
+            </div>
+            <div class="route-example">auga, cervexa, café, té, refresco, batido</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Material</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Substancia</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Gastronomía e inxesta</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Salsa ou condimento</span>
+            </div>
+            <div class="route-example">ketchup, mostaza, maionesa, prebe, mollo</div>
+
+  </div>
+</div>
+
+    <!-- INTELECTUAL -->
+    <div class="mundo-section" data-category="Intelectual">
+        <h2 class="mundo-title"><span class="category-level-1">Intelectual</span></h2>
+  
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Xeral</span>
+            </div>
+            <div class="route-example">idea, concepto, coñecemento, pensamento, noción, teoría</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Contido</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">tema, asunto, materia, tópico, cuestión, punto</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Contido</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Texto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">texto, relato, narración, historia, conto, novela</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Contido</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Texto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Publicado</span>
+            </div>
+            <div class="route-example">volume, edición, libro, revista, xornal, artigo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Contido</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Texto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Audiovisual</span>
+            </div>
+            <div class="route-example">pódcast, curtametraxe, documental, película, serie</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Contido</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Texto</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Dixital</span>
+            </div>
+            <div class="route-example">chío, blog, post, correo electrónico, mensaxe, chat</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Comunicación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Lingua</span>
+            </div>
+            <div class="route-example">galego, alemán, español, inglés, francés, italiano</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Comunicación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Enunciado (declaración e expresión)</span>
+            </div>
+            <div class="route-example">declaración, expresión, afirmación, pregunta, exclamación</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Comunicación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Acordo</span>
+            </div>
+            <div class="route-example">acordo, contrato, convenio, pacto, compromiso</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Comunicación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Oferta</span>
+            </div>
+            <div class="route-example">oferta, proposta, suxestión, convite, solicitude</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Temática</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Crenza (relixiosa)</span>
+            </div>
+            <div class="route-example">cristianismo, islamismo, hinduísmo, budismo, xudaísmo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Temática</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Ideoloxía</span>
+            </div>
+            <div class="route-example">comunismo, neoliberalismo, socialismo, capitalismo, anarquismo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Temática</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Área de coñecemento</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">ética, medicina tradicional, coñecemento, disciplina</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Temática</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Área de coñecemento</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Ciencias naturais</span>
+            </div>
+            <div class="route-example">bioloxía, física, química, xeoloxía, astronomía</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Temática</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Área de coñecemento</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Ciencias sociais</span>
+            </div>
+            <div class="route-example">socioloxía, antropoloxía, economía, historia, psicoloxía</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Temática</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Área de coñecemento</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Ciencias computacionais</span>
+            </div>
+            <div class="route-example">intelixencia artificial, aprendizaxe automática, programación, ciberseguridade</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Temática</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Área de coñecemento</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Humanidades e filosofía</span>
+            </div>
+            <div class="route-example">filosofía, filoloxía, literatura, lingüística, arte</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Sistemas de orde (económica)</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Impostos e taxas</span>
+            </div>
+            <div class="route-example">imposto de sociedades, IVE, IRPF, contribución, taxa</div>
+        </div>
+    </div>
+    </div>
+    <!-- SITUACIÓNS DINÁMICAS -->
+    <div class="mundo-section" data-category="Situacións dinámicas">
+        <h2 class="mundo-title"><span class="category-level-1">Situacións dinámicas</span></h2>
+        
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Xeral</span>
+            </div>
+            <div class="route-example">marea, luz, proceso, vaga, transformación, evolución</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humanas volitivas ou intencionais</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">atraco, desexo, acción, decisión, elección, vontade</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humanas volitivas ou intencionais</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Médico</span>
+            </div>
+            <div class="route-example">operación, transplante, cirurxía, tratamento, terapia</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humanas volitivas ou intencionais</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Violencia</span>
+            </div>
+            <div class="route-example">disparos, ataque, guerra, batalla, conflito, agresión</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humanas volitivas ou intencionais</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Formación</span>
+            </div>
+            <div class="route-example">investigación, adestramento, educación, ensino, aprendizaxe</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humanas volitivas ou intencionais</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Tempo libre</span>
+            </div>
+            <div class="route-example">excursión, lúa de mel, vacacións, paseo, recreo</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humanas volitivas ou intencionais</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Traballo</span>
+            </div>
+            <div class="route-example">teletraballo, negocios</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Humanas volitivas ou intencionais</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cognitivo ou intelectual</span>
+            </div>
+            <div class="route-example">reflexión, razoamento, análise, meditación</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Cambio</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Motricidade</span>
+            </div>
+            <div class="route-example">golpe, esvarón, caída, salto, movemento</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Natural</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">terremoto, erosión, avalancha, corremento, afundimento</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Natural</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Biolóxico</span>
+            </div>
+            <div class="route-example">simbiose, respiración, dixestión, circulación, fotosíntese</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Natural</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Químico</span>
+            </div>
+            <div class="route-example">queimadura, dixestión química, reacción, oxidación, fermentación</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Natural</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Combustión</span>
+            </div>
+            <div class="route-example">incendio, erupción, combustión, ignición, deflagración</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Natural</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Meteorolóxico</span>
+            </div>
+            <div class="route-example">choiva, raio, vento, tormenta, furacán, lóstrego</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Natural</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Patolóxico</span>
+            </div>
+            <div class="route-example">infarto, ataque, crise</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Natural</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Floración</span>
+            </div>
+            <div class="route-example">esfolla, floración, xerminación, crecemento, murchamento</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Acontecementos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">acontecemento, suceso, evento, feito, incidente</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Acontecementos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Orixe</span>
+            </div>
+            <div class="route-example">causa, motivo, razón</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Acontecementos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Resultado</span>
+            </div>
+            <div class="route-example">crise climática, desenlace, consecuencia, efecto</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Acontecementos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Contratempo</span>
+            </div>
+            <div class="route-example">accidente, atraso, atranco, imprevisto, contratempo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Acontecementos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Encontro</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Reunión</span>
+            </div>
+            <div class="route-example">conferencia, congreso, seminario, simposio, encontro</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Acontecementos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Encontro</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Cerimonia</span>
+            </div>
+            <div class="route-example">voda, bautizo, graduación, funeral, inauguración</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Acontecementos</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Efectivo</span>
+            </div>
+            <div class="route-example">nacemento, morte, inicio, fin, comezo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Actividades e accións</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">migración, exportación, actividade, acción, proceso</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Actividades e accións</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cambio</span>
+            </div>
+            <div class="route-example">modernización, desenvolvemento, transformación, evolución, mellora</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Actividades e accións</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Económicas</span>
+            </div>
+            <div class="route-example">adquisición, despedimento, comercio, venda, compra, investimento</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Actividades e accións</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Intencionais</span>
+            </div>
+            <div class="route-example">investigación, prohibición, planificación, organización, xestión</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Actividades e accións</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Educativas</span>
+            </div>
+            <div class="route-example">exame, avaliación, estudo, investigación</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Actividades e accións</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Deportivas</span>
+            </div>
+            <div class="route-example">baloncesto, fútbol, tenis, natación, atletismo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Actividades e accións</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Sociais</span>
+            </div>
+            <div class="route-example">activismo climático, financiamento colectivo, manifestación, protesta</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións dinámicas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Actividades e accións</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Empresariais</span>
+            </div>
+            <div class="route-example">gandaría, turismo, comercio, industria, agricultura</div>
+        </div>
+    </div>
+
+    <!-- SITUACIÓNS ESTÁTICAS -->
+    <div class="mundo-section" data-category="Situacións estáticas">
+        <h2 class="mundo-title"><span class="category-level-1">Situacións estáticas</span></h2>
+ 
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">cor, largura, forma, tamaño, peso, textura</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Identidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xénero</span>
+            </div>
+            <div class="route-example">non binario, transxénero, xénero fluído</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Identidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Orientación sexual</span>
+            </div>
+            <div class="route-example">heterosexual, homosexual, bisexual, asexual, pansexual</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Identidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Diversidade funcional</span>
+            </div>
+            <div class="route-example">persoa cega, persoa con mobilidade reducida, persoa neurodiversa</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Atributos sensoriais</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Olfacto</span>
+            </div>
+            <div class="route-example">aroma, cheiro, fragrancia, perfume, fedor, recendo</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Atributos sensoriais</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Gusto</span>
+            </div>
+            <div class="route-example">sabor, salgado, amargo, ácido, picante</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Planta</span>
+            </div>
+            <div class="route-example">floral, cítrico, aromático, vexetal, herbal</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Finalidade</span>
+            </div>
+            <div class="route-example">obxectivo, meta, propósito, finalidade, intención</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">intelixencia, creatividade, sabedoría, memoria, lóxica</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Intelectual</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Contido</span>
+            </div>
+            <div class="route-example">conceptualización, abstracción, comprensión, análise</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Magnitude</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">ancho, longo, extensión</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cantidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">soldo, honorarios, cantidade, suma, total</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cantidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Relacional</span>
+            </div>
+            <div class="route-example">frecuencia, proporción, porcentaxe, razón, índice</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Temperatura</span>
+            </div>
+            <div class="route-example">calor, frío</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cor</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">encarnado, tella, azul, verde, amarelo, negro</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cor</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Froita</span>
+            </div>
+            <div class="route-example">limón, cereixa, laranxa, mazá, uva</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cor</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Madeira</span>
+            </div>
+            <div class="route-example">caoba, castaño, carballo, piñeiro, cerdeira</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cor</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Minerais e metais</span>
+            </div>
+            <div class="route-example">cobre, prata, ouro, bronce, ferro</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cor</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Orgánico</span>
+            </div>
+            <div class="route-example">coiro, marfil, óso, la, algodón</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cor</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Pedras ornamentais</span>
+            </div>
+            <div class="route-example">mármore, esmeralda, rubí, zafiro, diamante</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cor</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Artificial</span>
+            </div>
+            <div class="route-example">cristal, PVC, plástico, vidro, resina</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cor</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Cerámico</span>
+            </div>
+            <div class="route-example">terracota, arxila, porcelana, barro, gres</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cor</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Líquido</span>
+            </div>
+            <div class="route-example">café, viño, leite, auga, aceite</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Avaliación subxectiva</span>
+            </div>
+            <div class="route-example">problema, sorte, beneficio, vantaxe, desvantaxe</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Normativo</span>
+            </div>
+            <div class="route-example">inconstitucionalidade, coercibilidade, legalidade, lexitimidade</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Atributos ou calidades</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Posicionamento cognitivo ou intelectual</span>
+            </div>
+            <div class="route-example">punto de vista, perspectiva, opinión, enfoque, postura</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Estado emocional</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">sentimento, emoción, estado de ánimo, humor, sensación</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Estado emocional</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Positivo</span>
+            </div>
+            <div class="route-example">entusiasmo, ledicia, felicidade, optimismo, esperanza</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Estado emocional</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Negativo</span>
+            </div>
+            <div class="route-example">tristeza, morriña, medo, ansiedade, ira</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Estado físico</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">dor, fame, mareo, vitalidade </div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Estado físico</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Positivo</span>
+            </div>
+            <div class="route-example">axilidade, flexibilidade, forza, resistencia, vigor</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Situacións estáticas</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Estado físico</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Negativo</span>
+            </div>
+            <div class="route-example">cansazo, enfermidade, debilidade, dor, malestar</div>
+        </div>
+    </div>
+
+    <!-- LUGAR -->
+    <div class="mundo-section" data-category="Lugar">
+        <h2 class="mundo-title"><span class="category-level-1">Lugar</span></h2>
+        
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Xeral</span>
+            </div>
+            <div class="route-example">praia, bosque, lugar, sitio, espazo, ubicación</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Paisaxe</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">deserto, montaña, val, chaira, outeiro, meseta</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Paisaxe</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Nome propio</span>
+            </div>
+            <div class="route-example">Everest, Pena Trevinca, Pireneos, Serra do Eixo, Himalaia, Andes</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Paisaxe</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Acuático</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+             </div>
+            <div class="route-example">mar, río, lago, océano, baía, golfo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+  <span class="category-level-2">Paisaxe</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Acuático</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Nome propio</span>
+            </div>
+            <div class="route-example">Mediterráneo, Nilo, Amazonas, Atlántico, Pacífico, Miño</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tipo de construcións e partes</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">aeroporto, parque, estadio, teatro, museo, biblioteca</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tipo de construcións e partes</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cuarto</span>
+            </div>
+            <div class="route-example">dormitorio, cociña, salón, baño, despacho, soto</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tipo de construcións e partes</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Parte</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Material</span>
+            </div>
+            <div class="route-example">baldosa, tella</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tipo de construcións e partes</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Parte</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">fiestra, tellado</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tipo de construcións e partes</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Tipo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xeral</span>
+            </div>
+            <div class="route-example">catedral, aeroporto, estadio, templo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tipo de construcións e partes</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Tipo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Medicina</span>
+            </div>
+            <div class="route-example">hospital, clínica, ambulatorio, sanatorio, consultorio</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tipo de construcións e partes</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Tipo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Xurisprudencia</span>
+            </div>
+            <div class="route-example">tribunal, cárcere</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tipo de construcións e partes</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Tipo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Empresarial</span>
+            </div>
+            <div class="route-example">tenda, editorial, empresa</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tipo de construcións e partes</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Tipo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Domicilio</span>
+            </div>
+            <div class="route-example">vivenda, casa, chalé acaroado</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tipo de construcións e partes</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Tipo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Educación</span>
+            </div>
+            <div class="route-example">escola, facultade, instituto, colexio</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tipo de construcións e partes</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Tipo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Desprazamento</span>
+            </div>
+            <div class="route-example">hotel, albergue, hostal</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Poboación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">capital, aldea, cidade, vila, municipio, localidade</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Poboación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Vía</span>
+            </div>
+            <div class="route-example">estrada, rúa</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Poboación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Ponte</span>
+            </div>
+            <div class="route-example">pasarela, ponte levadiza</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Poboación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Urbanismo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Canle</span>
+            </div>
+            <div class="route-example">túnel, canal, canle</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Poboación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Cidade (nome propio)</span>
+            </div>
+            <div class="route-example">Roma, Santiago, París, Londres, Barcelona, Lugo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Poboación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">País (nome propio)</span>
+            </div>
+            <div class="route-example">Chile, Grecia, España, Francia, Italia, Portugal</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Poboación</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Continente (nome propio)</span>
+            </div>
+            <div class="route-example">África, Europa, Asia</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Territorio</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">aldea, estado, rexión, provincia, comarca, territorio</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Territorio</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Illa</span>
+            </div>
+            <div class="route-example">Cíes, Azores, San Simón</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Territorio</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Área</span>
+            </div>
+            <div class="route-example">zona, campo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Territorio</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Parte</span>
+            </div>
+            <div class="route-example">centro, fronte</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Territorio</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Nome propio</span>
+            </div>
+            <div class="route-example">Bretaña, Toscana</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Locomoción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">tanque, avión, vehículo</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Locomoción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Terrestre</span>
+            </div>
+            <div class="route-example">moto, camión</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Locomoción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Acuático</span>
+            </div>
+            <div class="route-example">submarino, embarcación, barca, gamela</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Locomoción</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Aéreo</span>
+            </div>
+            <div class="route-example">bombardeiro, cazas, avioneta</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Espazos virtuais </span>
+<span class="arrow">→</span>
+<span class="category-level-3">Infraestrutura</span>
+            </div>
+            <div class="route-example">servidor web, plataforma educativa, nube, rede, base de datos, sitio web</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Lugar</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Punto cardinal</span>
+            </div>
+            <div class="route-example">norte, sur</div>
+        </div>
+    </div>
+
+    <!-- UNIDADES -->
+    <div class="mundo-section" data-category="Unidade">
+        <h2 class="mundo-title"><span class="category-level-1">Unidades</span></h2>
+      
+        
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Xeral</span>
+            </div>
+            <div class="route-example">euro, xigabyte, unidade, medida, cantidade, magnitude</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tempo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">días, semanas, meses, anos, séculos, milenios</div>
+        </div>
+     <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tempo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Período</span>
+            </div>
+            <div class="route-example">plistoceno</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tempo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Semana</span>
+            </div>
+            <div class="route-example">luns, quinta feira, venres, martes, mércores, xoves, sábado, domingo, terza feira</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tempo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Día</span>
+            </div>
+            <div class="route-example">mañá, tarde, noite, tardiña</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tempo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Meses</span>
+            </div>
+            <div class="route-example">marzo, xullo, xaneiro, maio, setembro, decembro</div>
+        </div>
+     <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tempo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Estación</span>
+            </div>
+            <div class="route-example">primavera, verán, outono</div>
+        </div>
+<div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Tempo</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Anos</span>
+            </div>
+            <div class="route-example">os 20, os 80, os 90</div>
+        </div>
+        
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Cantidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Xeral</span>
+            </div>
+            <div class="route-example">morea, tonelada, ducia, par, decena, centena</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Cantidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Número</span>
+            </div>
+            <div class="route-example">dous, catro, dez, vinte, cen, mil</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Cantidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Porcentaxe</span>
+            </div>
+            <div class="route-example">20%, 90%, 50%, 25%, 75%, 100%</div>
+        </div>
+     <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Cantidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Relacional</span>
+            </div>
+            <div class="route-example">metade, resto</div>
+        </div>
+
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Cantidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Numérica</span>
+            </div>
+            <div class="route-example">millón, trillón, resto</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Monetaria</span>
+            </div>
+            <div class="route-example">euro, dólar, libra, ien, peso, franco</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Medida</span>
+                <span class="arrow">→</span>
+                <span class="category-level-3">Espazo (lineal)</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Obxecto</span>
+            </div>
+            <div class="route-example">centímetros, milímetros</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Medida</span>
+ 	 <span class="arrow">→</span>
+                     <span class="category-level-3">Espazo (lineal)</span>
+                <span class="arrow">→</span>
+                <span class="category-level-4">Superficie</span>
+            </div>
+            <div class="route-example">iardas, quilómetros, millas</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Información dixital</span>
+            </div>
+            <div class="route-example">megabyte, xigabyte, terabyte, bit, byte, kilobyte</div>
+        </div>
+        <div class="route-item">
+            <div class="route-path">
+                <span class="category-level-1">Unidade</span>
+                <span class="arrow">→</span>
+                <span class="category-level-2">Potencia</span>
+            </div>
+            <div class="route-example">watt, quilowatt, megawatt, cabalo de vapor, joule</div>
+        </div>
+     
+
+        </div>
+    </div>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mundoSections = document.querySelectorAll('.mundo-section');
+            const worldButtonsContainer = document.getElementById('world-buttons');
+            const searchInput = document.getElementById('searchInput');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const searchStats = document.getElementById('searchStats');
+
+            // Función para alternar a visibilidade dos mundos
+            function showWorld(category) {
+                mundoSections.forEach(section => {
+                    if (category === 'all' || section.dataset.category === category) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Mostra todos os mundos e actualiza o filtro
+            function showAllWorlds() {
+                showWorld('all');
+                document.querySelectorAll('.route-item').forEach(route => route.classList.remove('hidden'));
+                searchInput.value = '';
+                categoryFilter.value = '';
+                searchStats.textContent = 'Selecciona un mundo ontolóxico para comezar a exploración';
+            }
+
+            // Crea os botóns dos mundos dinamicamente
+            function createWorldButtons() {
+                const mundos = Array.from(mundoSections).map(section => section.dataset.category);
+                
+                // Botón "Todos os mundos"
+                const allButton = document.createElement('button');
+                allButton.textContent = 'Todos os mundos';
+                allButton.className = 'world-button world-button-all';
+                allButton.addEventListener('click', showAllWorlds);
+                worldButtonsContainer.appendChild(allButton);
+
+                // Botóns para cada mundo
+                mundos.forEach(mundo => {
+                    const button = document.createElement('button');
+                    button.textContent = mundo;
+                    button.className = 'world-button';
+                    button.addEventListener('click', () => {
+                        showWorld(mundo);
+                        document.querySelectorAll('.route-item').forEach(route => route.classList.remove('hidden'));
+                        searchInput.value = '';
+                        categoryFilter.value = mundo;
+                    });
+                    worldButtonsContainer.appendChild(button);
+                });
+            }
+
+            // Lóxica para o filtro de busca
+            function filterItems() {
+                const query = searchInput.value.toLowerCase();
+                const selectedCategory = categoryFilter.value;
+                let foundItemsCount = 0;
+
+                mundoSections.forEach(section => {
+                    const sectionCategory = section.dataset.category;
+                    const routes = section.querySelectorAll('.route-item');
+                    let sectionHasVisibleItems = false;
+
+                    routes.forEach(route => {
+                        const routePath = route.querySelector('.route-path').textContent.toLowerCase();
+                        const routeExample = route.querySelector('.route-example').textContent.toLowerCase();
+                        const routeText = routePath + ' ' + routeExample;
+                        
+                        const isMatch = routeText.includes(query);
+                        const isCategoryMatch = selectedCategory === '' || sectionCategory === selectedCategory;
+
+                        if (isMatch && isCategoryMatch) {
+                            route.classList.remove('hidden');
+                            sectionHasVisibleItems = true;
+                            foundItemsCount++;
+                        } else {
+                            route.classList.add('hidden');
+                        }
+                    });
+
+                    if (selectedCategory === '') {
+                        if (sectionHasVisibleItems) {
+                            section.classList.remove('hidden');
+                        } else {
+                            section.classList.add('hidden');
+                        }
+                    } else {
+                        if (sectionCategory === selectedCategory) {
+                            section.classList.remove('hidden');
+                        } else {
+                            section.classList.add('hidden');
+                        }
+                    }
+                });
+
+                searchStats.textContent = `Atopáronse ${foundItemsCount} resultados.`;
+            }
+
+            // Event listeners
+            searchInput.addEventListener('input', filterItems);
+            categoryFilter.addEventListener('change', filterItems);
+            
+            // Función para mostrar/ocultar seccións de axuda
+            window.toggleHelp = function(id) {
+                const element = document.getElementById(id + '-help');
+                element.classList.toggle('active');
+            }
+
+            createWorldButtons();
+            showWorld('all'); // Mostra todos os mundos por defecto
+        });
+    </script>
+</body>
+</html>
